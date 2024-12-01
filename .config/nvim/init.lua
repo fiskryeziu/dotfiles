@@ -239,6 +239,8 @@ for i = 1, 9 do
   vim.keymap.set('n', '<A-' .. i .. '>', i .. 'gt', { desc = 'Go to tab ' .. i })
 end
 
+vim.keymap.set('x', '<leader>p', '"_dP')
+
 -- [[ Basic Autocommands ]]
 --  See `:help lua-guide-autocommands`
 
@@ -308,6 +310,29 @@ require('lazy').setup({
     end,
   },
 
+  -- {
+  --   'laytan/tailwind-sorter.nvim',
+  --   config = function()
+  --     require('tailwind-sorter').setup {
+  --       on_save_enabled = true, -- If `true`, automatically enables on save sorting.
+  --       on_save_pattern = { '*.html', '*.jsx', '*.tsx' }, -- The file patterns to watch and sort.
+  --       node_path = 'node',
+  --       trim_spaces = false, -- If `true`, trim any extra spaces after sorting.
+  --     }
+  --   end,
+  -- },
+
+  -- {
+  --   'luckasRanarison/tailwind-tools.nvim',
+  --   name = 'tailwind-tools',
+  --   build = ':UpdateRemotePlugins',
+  --   dependencies = {
+  --     'nvim-treesitter/nvim-treesitter',
+  --     'nvim-telescope/telescope.nvim', -- optional
+  --     'neovim/nvim-lspconfig', -- optional
+  --   },
+  --   opts = {}, -- your configuration
+  -- },
   {
     'mg979/vim-visual-multi',
     branch = 'master',
@@ -323,7 +348,43 @@ require('lazy').setup({
   --  This is equivalent to:
   --    require('Comment').setup({})
   -- "gc" to comment visual regions/lines
-  { 'numToStr/Comment.nvim', opts = {} },
+  {
+    'numToStr/Comment.nvim',
+    config = function()
+      local prehook = require('ts_context_commentstring.integrations.comment_nvim').create_pre_hook()
+      require('Comment').setup {
+        padding = true,
+        sticky = true,
+        ignore = '^$',
+        toggler = {
+          line = 'gcc',
+          block = 'gbc',
+        },
+        opleader = {
+          line = 'gc',
+          block = 'gb',
+        },
+        extra = {
+          above = 'gcO',
+          below = 'gco',
+          eol = 'gcA',
+        },
+        mappings = {
+          basic = true,
+          extra = true,
+          extended = false,
+        },
+        pre_hook = prehook,
+        post_hook = nil,
+      }
+    end,
+    event = 'BufReadPre',
+    lazy = false,
+    dependencies = {
+      'nvim-treesitter/nvim-treesitter',
+      'JoosepAlviste/nvim-ts-context-commentstring',
+    },
+  },
 
   {
     'christoomey/vim-tmux-navigator', -- The plugin repository
@@ -343,6 +404,9 @@ require('lazy').setup({
     },
   },
 
+  {
+    'tpope/vim-fugitive',
+  },
   -- Here is a more advanced example where we pass configuration
   -- options to `gitsigns.nvim`. This is equivalent to the following Lua:
   --    require('gitsigns').setup({ ... })
@@ -352,24 +416,24 @@ require('lazy').setup({
     'lewis6991/gitsigns.nvim',
     opts = {
       signs = {
-        add = { text = '+' },
-        change = { text = '~' },
+        add = { text = '┃' },
+        change = { text = '┃' },
         delete = { text = '_' },
         topdelete = { text = '‾' },
         changedelete = { text = '~' },
+        untracked = { text = '┆' },
       },
+      current_line_blame = true, -- Toggle with `:Gitsigns toggle_current_line_blame`
     },
   },
 
   -- plugin for #fff to show the color
   {
-    'norcalli/nvim-colorizer.lua',
-    config = function()
-      require('colorizer').setup {
-        '*', -- Highlight all file types
-        css = { css = true }, -- Enable all CSS features
-      }
-    end,
+    'NvChad/nvim-colorizer.lua',
+    opts = {
+      filetypes = { '*' },
+      user_default_options = {},
+    },
   },
 
   -- NOTE: Plugins can also be configured to run Lua code when they are loaded.
@@ -737,7 +801,32 @@ require('lazy').setup({
         -- But for many setups, the LSP (`tsserver`) will work just fine
         -- tsserver = {},
         --
-
+        --
+        -- tailwindcss = {
+        --   cmd = { 'tailwindcss-language-server', '--stdio' },
+        --   filetypes = { 'javascript', 'javascriptreact', 'typescript', 'typescriptreact' },
+        --   hovers = true,
+        --   suggestions = true,
+        --   root_dir = function(fname)
+        --     local root_pattern = require('lspconfig').util.root_pattern('tailwind.config.cjs', 'tailwind.config.js', 'postcss.config.js')
+        --     return root_pattern(fname)
+        --   end,
+        --   settings = {
+        --     tailwindCSS = {
+        --       classAttributes = { 'class', 'className', 'ngClass' },
+        --       files = {
+        --         exclude = {
+        --           '**/.git/**',
+        --           '**/node_modules/**',
+        --           '**/.hg/**',
+        --           '**/.svn/**',
+        --           '**/volumes/**',
+        --           '**/.nx/**',
+        --         },
+        --       },
+        --     },
+        --   },
+        -- },
         lua_ls = {
           -- cmd = {...},
           -- filetypes = { ...},
@@ -817,17 +906,14 @@ require('lazy').setup({
         -- You can use a sub-list to tell conform to run *until* a formatter
         -- is found.
         lua = { 'stylua' },
-        javascript = { 'prettier' },
-        typescript = { 'prettier' },
-        javascriptreact = { 'prettier' },
-        typescriptreact = { 'prettier' },
-        svelte = { 'prettier' },
+        javascript = { 'prettierd' },
+        typescript = { 'prettierd' },
+        javascriptreact = { 'prettierd' },
+        typescriptreact = { 'prettierd' },
         css = { 'prettier' },
         html = { 'prettier' },
         json = { 'prettier' },
         yaml = { 'prettier' },
-        markdown = { 'prettier' },
-        graphql = { 'prettier' },
       },
     },
   },
@@ -837,6 +923,8 @@ require('lazy').setup({
     event = 'InsertEnter',
     dependencies = {
       -- Snippet Engine & its associated nvim-cmp source
+      -- 'luckasRanarison/tailwind-tools.nvim',
+      'onsails/lspkind-nvim',
       {
         'L3MON4D3/LuaSnip',
         build = (function()
@@ -859,6 +947,21 @@ require('lazy').setup({
             end,
           },
         },
+        config = function()
+          local ls = require 'luasnip'
+          local s = ls.snippet
+          local t = ls.text_node
+          local i = ls.insert_node
+
+          -- Define inline custom snippets
+          ls.add_snippets('javascript', {
+            s('clg', { t 'console.log(', i(1, 'value'), t ');' }),
+          })
+
+          ls.add_snippets('typescript', {
+            s('clg', { t 'console.log(', i(1, 'value'), t ');' }),
+          })
+        end,
       },
       'saadparwaiz1/cmp_luasnip',
 
@@ -899,18 +1002,18 @@ require('lazy').setup({
           -- Accept ([y]es) the completion.
           --  This will auto-import if your LSP supports it.
           --  This will expand snippets if the LSP sent a snippet.
-          -- ['<C-y>'] = cmp.mapping.confirm { select = true },
+          ['<CR>'] = cmp.mapping.confirm { select = true },
 
           -- If you prefer more traditional completion keymaps,
           -- you can uncomment the following lines
-          ['<CR>'] = cmp.mapping.confirm { select = true },
+          --['<CR>'] = cmp.mapping.confirm { select = true },
           --['<Tab>'] = cmp.mapping.select_next_item(),
           --['<S-Tab>'] = cmp.mapping.select_prev_item(),
 
           -- Manually trigger a completion from nvim-cmp.
           --  Generally you don't need this, because nvim-cmp will display
           --  completions whenever it has completion options available.
-          ['<C-y>'] = cmp.mapping.complete(),
+          ['<C-Space>'] = cmp.mapping.complete {},
 
           -- Think of <c-l> as moving to the right of your snippet expansion.
           --  So if you have a snippet that's like:
@@ -922,6 +1025,7 @@ require('lazy').setup({
           -- <c-h> is similar, except moving you backwards.
           ['<C-l>'] = cmp.mapping(function()
             if luasnip.expand_or_locally_jumpable() then
+              print 'LuaSnip expand/jump forward'
               luasnip.expand_or_jump()
             end
           end, { 'i', 's' }),
@@ -935,6 +1039,11 @@ require('lazy').setup({
           --    https://github.com/L3MON4D3/LuaSnip?tab=readme-ov-file#keymaps
         },
         sources = {
+          {
+            name = 'lazydev',
+            -- set group index to 0 to skip loading LuaLS completions as lazydev recommends it
+            group_index = 0,
+          },
           { name = 'nvim_lsp' },
           { name = 'luasnip' },
           { name = 'path' },
@@ -956,6 +1065,9 @@ require('lazy').setup({
       -- any other, such as 'tokyonight-storm', 'tokyonight-moon', or 'tokyonight-day'.
       vim.cmd.colorscheme 'tokyonight-night'
 
+      vim.api.nvim_set_hl(0, 'GitSignsAdd', { fg = '#238536' })
+      vim.api.nvim_set_hl(0, 'GitSignsChange', { fg = '#6A3EC1' })
+      vim.api.nvim_set_hl(0, 'GitSignsDelete', { fg = '#FF0000' })
       -- You can configure highlights by doing something like:
       vim.cmd.hi 'Comment gui=none'
     end,
@@ -1094,3 +1206,4 @@ require('lazy').setup({
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
+
