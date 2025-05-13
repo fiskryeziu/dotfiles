@@ -10,6 +10,8 @@ export JAVA_HOME=/opt/jdk-11.0.24+8
 export PATH=$JAVA_HOME/bin:$PATH
 
 
+export EDITOR="nvim"
+
 # Set name of the theme to load --- if set to "random", it will
 # load a random theme each time Oh My Zsh is loaded, in which case,
 # to know which specific one was loaded, run: echo $RANDOM_THEME
@@ -106,6 +108,26 @@ export PATH="$PATH:/opt/nvim-linux64/bin"
 # Ensure PATH includes tmux
 export PATH="/usr/local/bin:$PATH"
 
+
+
+# FZF 
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+source "/home/fisnik/.fzf/shell/key-bindings.zsh"
+source "/home/fisnik/.fzf/shell/completion.zsh"
+
+export FZF_DEFAULT_COMMAND="fdfind --hidden --strip-cwd-prefix --exclude .git "
+export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
+export FZF_ALT_C_COMMAND="fdfind --type=d --hidden --strip-cwd-prefix --exclude .git"
+
+export FZF_DEFAULT_OPTS="--height 50% --layout=default --border --color=hl:#2dd4bf"
+
+# Setup fzf previews
+export FZF_CTRL_T_OPTS="--preview 'bat --color=always -n --line-range :500 {}'"
+export FZF_ALT_C_OPTS="--preview 'lsd --icon always --tree --color always {} | head -200'"
+
+# fzf preview for tmux
+export FZF_TMUX_OPTS=" -p90%,70% "
+
 # Set personal aliases, overriding those provided by Oh My Zsh libs,
 # plugins, and themes. Aliases can be placed here, though Oh My Zsh
 # users are encouraged to define aliases within a top-level file in
@@ -122,8 +144,45 @@ alias v='nvim'
 alias vim='nvim'
 alias pn=pnpm
 
+alias ls='lsd --icon always --classify --blocks=user,size,date,name'
+alias ls-a='lsd -a --icon always --classify --blocks=user,size,date,name'
+alias bat="batcat"
+alias lg="lazygit"
+
 # bind key for autosuggestion
 bindkey '^ ' autosuggest-accept
 
+jxport NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
 
+# pnpm
+export PNPM_HOME="/home/fisnik/.local/share/pnpm"
+case ":$PATH:" in
+  *":$PNPM_HOME:"*) ;;
+  *) export PATH="$PNPM_HOME:$PATH" ;;
+esac
+# pnpm end
+
+PATH=~/.console-ninja/.bin:$PATH
+
+# go lang path
+export PATH=$PATH:/usr/local/go/bin
+
+# zed path
+export PATH=$HOME/.local/bin:$PATH
+
+#bun path
+export PATH="$HOME/.bun/bin:$PATH"
+
+#zig 
+export PATH="/usr/local/bin/zig/zig-linux-x86_64-0.13.0:$PATH"
+
+# bun completions
+[ -s "/home/fisnik/.bun/_bun" ] && source "/home/fisnik/.bun/_bun"
+
+# bun
+export BUN_INSTALL="$HOME/.bun"
+export PATH="$BUN_INSTALL/bin:$PATH"
+export PATH="$HOME/.cargo/bin:$PATH"

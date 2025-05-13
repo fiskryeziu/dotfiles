@@ -117,3 +117,12 @@ if ! shopt -oq posix; then
 fi
 
 export PATH="$PATH:/opt/nvim-linux64/bin"
+
+# Set up fzf key bindings and fuzzy completion
+eval "$(fzf --bash)"
+
+PATH=~/.console-ninja/.bin:$PATHexport PATH="$HOME/zig-linux-x86_64-0.13.0:$PATH"
+export PATH="$HOME/zig-linux-x86_64-0.14.0:$PATH"
+
+[ -f ~/.fzf.bash ] && source ~/.fzf.bash
+. "$HOME/.cargo/env"

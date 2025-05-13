@@ -11,16 +11,19 @@ return {
   },
   cmd = 'Neotree',
   keys = {
-    { '\\', ':Neotree reveal<CR>', { desc = 'NeoTree reveal' } },
+    { '\\', ':Neotree toggle<CR>', { desc = 'NeoTree toggle' } },
     { '<C-l>', ':tabn<CR>', { desc = 'Next tab' } },
     { '<C-h>', ':tabp<CR>', { desc = 'Previous tab' } },
   },
   opts = {
     filesystem = {
+      follow_current_file = { enabled = true },
       window = {
         mappings = {
           ['\\'] = 'close_window',
         },
+        auto_expand_width = true,
+        width = 30,
       },
     },
   },

@@ -101,7 +101,7 @@ vim.g.have_nerd_font = true
 vim.opt.number = true
 -- You can also add relative line numbers, to help with jumping.
 --  Experiment for yourself to see if you like it!
--- vim.opt.relativenumber = true
+vim.opt.relativenumber = true
 
 -- Enable mouse mode, can be useful for resizing splits for example!
 vim.opt.mouse = 'a'
@@ -237,12 +237,23 @@ require('lazy').setup({
   -- with the first argument being the link and the following
   -- keys can be used to configure plugin behavior/loading/etc.
   --
-  -- Use `opts = {}` to force a plugin to be loaded.
+  -- Use `opts = {}` to automatically pass options to a plugin's `setup()` function, forcing the plugin to be loaded.
   --
 
+  -- 'github/copilot.vim',
+  -- Alternatively, use `config = function() ... end` for full control over the configuration.
+  -- If you prefer to call `setup` explicitly, use:
+  --    {
+  --        'lewis6991/gitsigns.nvim',
+  --        config = function()
+  --            require('gitsigns').setup({
+  --                -- Your gitsigns configuration here
+  --            })
+  --        end,
+  --    }
+  --
   -- Here is a more advanced example where we pass configuration
-  -- options to `gitsigns.nvim`. This is equivalent to the following Lua:
-  --    require('gitsigns').setup({ ... })
+  -- options to `gitsigns.nvim`.
   --
   -- See `:help gitsigns` to understand what the configuration keys do
   { -- Adds git related signs to the gutter, as well as utilities for managing changes
@@ -388,11 +399,15 @@ require('lazy').setup({
         -- You can put your default mappings / updates / etc. in here
         --  All the info you're looking for is in `:help telescope.setup()`
         --
-        -- defaults = {
-        --   mappings = {
-        --     i = { ['<c-enter>'] = 'to_fuzzy_refine' },
-        --   },
-        -- },
+        defaults = {
+          -- mappings = {
+          --   i = { ['<c-enter>'] = 'to_fuzzy_refine' },
+          -- },
+
+          file_ignore_patterns = {
+            'node_modules',
+          },
+        },
         -- pickers = {}
         extensions = {
           ['ui-select'] = {
@@ -452,11 +467,10 @@ require('lazy').setup({
     opts = {
       library = {
         -- Load luvit types when the `vim.uv` word is found
-        { path = 'luvit-meta/library', words = { 'vim%.uv' } },
+        { path = '${3rd}/luv/library', words = { 'vim%.uv' } },
       },
     },
   },
-  { 'Bilal2453/luvit-meta', lazy = true },
   {
     -- Main LSP Configuration
     'neovim/nvim-lspconfig',
@@ -469,7 +483,6 @@ require('lazy').setup({
       'WhoIsSethDaniel/mason-tool-installer.nvim',
 
       -- Useful status updates for LSP.
-      -- NOTE: `opts = {}` is the same as calling `require('fidget').setup({})`
       { 'j-hui/fidget.nvim', opts = {} },
 
       -- Allows extra capabilities provided by nvim-cmp
@@ -480,7 +493,7 @@ require('lazy').setup({
       --
       -- LSP is an initialism you've probably heard, but might not understand what it is.
       --
-      -- LSP stands for Language Server Protocol. It's a protocol that helps editors
+      -- LSP stands for Language HHHHHH Protocol. It's a protocol that helps editors
       -- and language tooling communicate in a standardized fashion.
       --
       -- In general, you have a "server" which is some tool built to understand a particular
@@ -633,25 +646,20 @@ require('lazy').setup({
         --    https://github.com/pmizio/typescript-tools.nvim
         --
         -- But for many setups, the LSP (`ts_ls`) will work just fine
+        -- TypeScript
+        volar = { 'vue' },
         ts_ls = {
+          filetypes = { 'typescript', 'javascript', 'javascriptreact', 'typescriptreact', 'vue' },
           init_options = {
             plugins = {
               {
                 name = '@vue/typescript-plugin',
-                location = '/home/fisnik/.nvm/versions/node/v22.11.0/lib/node_modules/@vue/typescript-plugin',
-                languages = { 'javascript', 'typescript', 'vue' },
+                location = vim.fn.stdpath 'data' .. '/mason/packages/vue-language-server/node_modules/@vue/language-server',
+                languages = { 'vue' },
               },
             },
           },
-          filetypes = {
-            'javascript',
-            'typescript',
-            'vue',
-          },
         },
-
-        volar = { 'vue' },
-
         lua_ls = {
           -- cmd = { ... },
           -- filetypes = { ... },
@@ -730,7 +738,7 @@ require('lazy').setup({
           lsp_format_opt = 'fallback'
         end
         return {
-          timeout_ms = 500,
+          timeout_ms = 2500,
           lsp_format = lsp_format_opt,
         }
       end,
@@ -740,11 +748,12 @@ require('lazy').setup({
         typescript = { 'prettierd' },
         javascriptreact = { 'prettierd' },
         typescriptreact = { 'prettierd' },
-        vue = { 'prettierd' },
+        vue = { 'prettier' },
         css = { 'prettier' },
         html = { 'prettier' },
-        json = { 'prettier' },
+        json = { 'prettier', 'prettierd' },
         yaml = { 'prettier' },
+        sql = { 'sleek' },
         -- Conform can also run multiple formatters sequentially
         -- python = { "isort", "black" },
         --
@@ -923,7 +932,16 @@ require('lazy').setup({
       -- - saiw) - [S]urround [A]dd [I]nner [W]ord [)]Paren
       -- - sd'   - [S]urround [D]elete [']quotes
       -- - sr)'  - [S]urround [R]eplace [)] [']
-      require('mini.surround').setup()
+      require('mini.surround').setup {
+        custom_surroundings = {
+          ['<'] = {
+            input = { '%b<>', '^<.->().*()</.->$' }, -- Detects <tag>...</tag>
+            output = function()
+              return { left = '<>', right = '</>' } -- Wraps with <>
+            end,
+          },
+        },
+      }
 
       -- Simple and easy statusline.
       --  You could remove this setup call if you don't like it,
