@@ -116,13 +116,23 @@ if ! shopt -oq posix; then
   fi
 fi
 
-export PATH="$PATH:/opt/nvim-linux64/bin"
+export PATH="/opt/nvim/bin:$PATH"
 
-# Set up fzf key bindings and fuzzy completion
-eval "$(fzf --bash)"
+export PATH=$PATH:/opt/zig
 
-PATH=~/.console-ninja/.bin:$PATHexport PATH="$HOME/zig-linux-x86_64-0.13.0:$PATH"
-export PATH="$HOME/zig-linux-x86_64-0.14.0:$PATH"
+. "$HOME/.cargo/env"
+
+# pnpm
+export PNPM_HOME="/home/fisnik/.local/share/pnpm"
+case ":$PATH:" in
+  *":$PNPM_HOME:"*) ;;
+  *) export PATH="$PNPM_HOME:$PATH" ;;
+esac
+# pnpm end
+
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+
 
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
-. "$HOME/.cargo/env"

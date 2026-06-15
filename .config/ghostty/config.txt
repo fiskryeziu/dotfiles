@@ -1,6 +1,9 @@
-theme=tokyonight
+theme=TokyoNight
+window-theme=ghostty
 font-family=Hack Nerd Font
-maximize=true
+maximize = true
+
+keybind = ctrl+f=toggle_maximize
 
 
 keybind = alt+one=unbind

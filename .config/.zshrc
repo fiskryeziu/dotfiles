@@ -6,7 +6,8 @@ export ZSH="$HOME/.oh-my-zsh"
 
 
 #Java jdk path
-export JAVA_HOME=/opt/jdk-11.0.24+8
+#
+export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
 export PATH=$JAVA_HOME/bin:$PATH
 
 
@@ -78,11 +79,11 @@ ZSH_THEME="robbyrussell"
 # Custom plugins may be added to $ZSH_CUSTOM/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(git
-        zsh-autosuggestions
-        z
-    )
-
+plugins=(
+  git
+  zsh-autosuggestions
+  zsh-syntax-highlighting
+)
 source $ZSH/oh-my-zsh.sh
 
 # User configuration
@@ -103,15 +104,12 @@ source $ZSH/oh-my-zsh.sh
 # export ARCHFLAGS="-arch $(uname -m)"
 
 # nvim path
-export PATH="$PATH:/opt/nvim-linux64/bin"
+#
+export PATH="$PATH:/opt/nvim/bin"
 
 # Ensure PATH includes tmux
 export PATH="/usr/local/bin:$PATH"
 
-
-
-# FZF 
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 source "/home/fisnik/.fzf/shell/key-bindings.zsh"
 source "/home/fisnik/.fzf/shell/completion.zsh"
 
@@ -143,16 +141,19 @@ export FZF_TMUX_OPTS=" -p90%,70% "
 alias v='nvim'
 alias vim='nvim'
 alias pn=pnpm
+alias anti='antigravity'
+alias ag='antigravity'
 
 alias ls='lsd --icon always --classify --blocks=user,size,date,name'
 alias ls-a='lsd -a --icon always --classify --blocks=user,size,date,name'
 alias bat="batcat"
 alias lg="lazygit"
+alias t="tmux"
 
 # bind key for autosuggestion
 bindkey '^ ' autosuggest-accept
 
-jxport NVM_DIR="$HOME/.nvm"
+export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
@@ -177,7 +178,7 @@ export PATH=$HOME/.local/bin:$PATH
 export PATH="$HOME/.bun/bin:$PATH"
 
 #zig 
-export PATH="/usr/local/bin/zig/zig-linux-x86_64-0.13.0:$PATH"
+export PATH=$PATH:/opt/zig
 
 # bun completions
 [ -s "/home/fisnik/.bun/_bun" ] && source "/home/fisnik/.bun/_bun"
@@ -186,3 +187,25 @@ export PATH="/usr/local/bin/zig/zig-linux-x86_64-0.13.0:$PATH"
 export BUN_INSTALL="$HOME/.bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
 export PATH="$HOME/.cargo/bin:$PATH"
+
+
+export ANDROID_SDK_ROOT=$HOME/Android
+export PATH=$ANDROID_SDK_ROOT/cmdline-tools/cmdline-tools/bin:$ANDROID_SDK_ROOT/platform-tools:$PATH
+
+export ANDROID_HOME=$HOME/Android
+export PATH=$ANDROID_HOME/emulator:$ANDROID_HOME/platform-tools:$ANDROID_HOME/cmdline-tools/latest/bin:$PATH
+
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+
+
+
+export SUDO_EDITOR="nvim"
+export EDITOR="nvim"
+
+
+export PATH=$HOME/.local/bin:$PATH
+export GTK_THEME=Adwaita:light
+
+
+
+eval "$(zoxide init zsh)"
